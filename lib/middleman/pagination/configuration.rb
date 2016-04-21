@@ -2,27 +2,19 @@ module Middleman
   module Pagination
     class Configuration
       include Enumerable
-      
+
       def initialize
         @pageable = {}
       end
 
-      def pageable(name, &block)
-        warn "`pageable` is deprecated, use `pageable_resource` instead"
-        pageable_resource(name, &block)
-      end
-
-      def pageable_resource(name, &block)
-        @pageable[name] = Pageable.new(name) do
-          resources.select do |resource|
-            next if resource.ignored?
-            block.call(resource)
-          end.sort_by(&:path)
-        end
-      end
-
-      def pageable_set(name, &block)
-        @pageable[name] = Pageable.new(name, &block)
+      def pageable_set(name, template_path, per_page = 15, symbolic_path_replacement = nil, &block)
+        @pageable[name] = Pageable.new(
+          name,
+          template_path,
+          per_page,
+          symbolic_path_replacement,
+          &block
+        )
       end
 
       def each(&block)
